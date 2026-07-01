@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    @apply bg-primary-50 text-gray-900 font-sans;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+}
+
+/* ── Named print pages (must be outside @media) ────────────────────────────── */
+@page           { size: A4 portrait;  margin: 5mm; }
+@page landscape { size: A4 landscape; margin: 5mm; }
+
+/* ── Cut-line separators (visible on screen & print) ───────────────────────── */
+.print-cut-h {
+  position: relative;
+  flex-shrink: 0;
+  height: 14px;
+}
+.print-cut-h::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  border-top: 1.5px dashed #c4b5fd;
+}
+
+.print-cut-v {
+  position: relative;
+  flex-shrink: 0;
+  width: 14px;
+  align-self: stretch;
+}
+.print-cut-v::before {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: 50%;
+  border-left: 1.5px dashed #c4b5fd;
+}
+
+/* ── Print media ────────────────────────────────────────────────────────────── */
+@media print {
+  body * { visibility: hidden; }
+  #print-area, #print-area * { visibility: visible; }
+  #print-area { position: absolute; top: 0; left: 0; width: 100%; }
+
+  /* Landscape page for small tickets */
+  .print-page-landscape { page: landscape; }
+
+  .print-page {
+    break-after: page;
+    page-break-after: always;
+    height: 100vh;
+    box-sizing: border-box;
+  }
+  .print-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  /* Structure: page-inner → rows → col cells */
+  .ticket-page-inner { height: 100%; display: flex; flex-direction: column; }
+  .ticket-row        { flex: 1; display: flex; min-height: 0; }
+  .ticket-col-cell   { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .ticket-col-cell .ticket-wrap { flex: 1; }
+
+  /* Cut lines darker in print */
+  .print-cut-h::before { border-top-color:  #888; border-top-width:  1px; }
+  .print-cut-v::before { border-left-color: #888; border-left-width: 1px; }
+
+  /* Ticket internals */
+  .ticket-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden;
+    min-height: 0;
+  }
+  .ticket-wrap table { flex: 1 !important; height: 100% !important; }
+  .ticket-wrap tr    { height: 33.33%; }
+  .ticket-wrap td {
+    padding: 0 !important;
+    vertical-align: middle;
+    font-size: var(--print-num-size, 7mm) !important;
+    line-height: 1;
+  }
+}
