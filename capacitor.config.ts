@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-  appId: 'com.thambolahousie.app',
-  appName: 'Thambola',
+  appId: 'com.tambolacaller.app',
+  appName: 'Tambola Caller',
   webDir: 'dist',
   server: {
     androidScheme: 'https'
