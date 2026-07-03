@@ -58,7 +58,7 @@
   .print-page {
     break-after: page;
     page-break-after: always;
-    height: 287mm; /* A4 (297mm) minus 5mm top + 5mm bottom margin */
+    height: 262mm; /* A4 printable (287mm) minus ~25mm buffer so tickets never overflow */
     box-sizing: border-box;
     overflow: hidden;
   }

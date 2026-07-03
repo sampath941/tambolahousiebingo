@@ -18,9 +18,9 @@ interface SizeConfig {
 }
 
 const SIZES: Record<TicketSize, SizeConfig> = {
-  small:  { label: 'Small',  perPage: 10, cols: 2, rows: 5, desc: '10 / page · 2 cols', printNumMm: 6,  landscape: false },
-  medium: { label: 'Medium', perPage: 5,  cols: 1, rows: 5, desc: '5 / page · 1 col',   printNumMm: 9,  landscape: false },
-  big:    { label: 'Big',    perPage: 3,  cols: 1, rows: 3, desc: '3 / page · 1 col',   printNumMm: 13, landscape: false },
+  small:  { label: 'Small',  perPage: 10, cols: 2, rows: 5, desc: '10 / page · 2 cols', printNumMm: 5,  landscape: false },
+  medium: { label: 'Medium', perPage: 5,  cols: 1, rows: 5, desc: '5 / page · 1 col',   printNumMm: 8,  landscape: false },
+  big:    { label: 'Big',    perPage: 3,  cols: 1, rows: 3, desc: '3 / page · 1 col',   printNumMm: 11, landscape: false },
 }
 
 const SCREEN_FONT: Record<1 | 2, string> = {
