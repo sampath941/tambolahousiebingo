@@ -93,13 +93,14 @@ async function downloadAsPDF(tickets: TambolaTicket[], size: TicketSize, pages: 
   const cfg = SIZES[size]
 
   // A4 dimensions (mm)
-  const PAGE_W = 210
-  const PAGE_H = 297
-  const MARGIN  = 5
-  const CUT_GAP = 5   // mm gap between tickets where cut line lives
+  const PAGE_W    = 210
+  const PAGE_H    = 297
+  const MARGIN    = 5
+  const CUT_GAP   = 5    // mm gap between tickets where cut line lives
+  const TICKET_AREA_H = 262 // matches CSS print height — leaves ~25mm buffer at bottom
 
   const ticketW = (PAGE_W - MARGIN * 2 - CUT_GAP * (cfg.cols - 1)) / cfg.cols
-  const ticketH = (PAGE_H - MARGIN * 2 - CUT_GAP * (cfg.rows - 1)) / cfg.rows
+  const ticketH = (TICKET_AREA_H - CUT_GAP * (cfg.rows - 1)) / cfg.rows
 
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
 
