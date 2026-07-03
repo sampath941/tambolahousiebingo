@@ -50,7 +50,11 @@
 @media print {
   body * { visibility: hidden; }
   #print-area, #print-area * { visibility: visible; }
-  #print-area { position: absolute; top: 0; left: 0; width: 100%; }
+  #print-area {
+    position: absolute; top: 0; left: 0; width: 100%;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
   /* Landscape page for small tickets */
   .print-page-landscape { page: landscape; }
@@ -91,5 +95,20 @@
     vertical-align: middle;
     font-size: var(--print-num-size, 7mm) !important;
     line-height: 1;
+  }
+
+  /* Label strip — ticket number and fortune */
+  .ticket-label {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    justify-content: center !important;
+  }
+  .ticket-label-num {
+    font-size: var(--print-label-num, 2.5mm) !important;
+  }
+  .ticket-label-fortune {
+    font-size: var(--print-fortune-size, 2.2mm) !important;
+    font-weight: bold !important;
+    color: white !important;
   }
 }

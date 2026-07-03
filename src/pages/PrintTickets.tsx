@@ -18,14 +18,14 @@ interface SizeConfig {
 }
 
 const SIZES: Record<TicketSize, SizeConfig> = {
-  small:  { label: 'Small',  perPage: 10, cols: 2, rows: 5, desc: '10 / page · 2 cols', printNumMm: 5,  landscape: false },
-  medium: { label: 'Medium', perPage: 5,  cols: 1, rows: 5, desc: '5 / page · 1 col',   printNumMm: 8,  landscape: false },
-  big:    { label: 'Big',    perPage: 3,  cols: 1, rows: 3, desc: '3 / page · 1 col',   printNumMm: 11, landscape: false },
+  small:  { label: 'Small',  perPage: 10, cols: 2, rows: 5, desc: '10 / page · 2 cols', printNumMm: 4,  landscape: false },
+  medium: { label: 'Medium', perPage: 5,  cols: 1, rows: 5, desc: '5 / page · 1 col',   printNumMm: 7,  landscape: false },
+  big:    { label: 'Big',    perPage: 3,  cols: 1, rows: 3, desc: '3 / page · 1 col',   printNumMm: 10, landscape: false },
 }
 
 const SCREEN_FONT: Record<1 | 2, string> = {
-  2: 'clamp(6px, 1.4vw, 9px)',
-  1: 'clamp(9px, 2.4vw, 13px)',
+  2: 'clamp(5px, 1.4vw, 8px)',
+  1: 'clamp(8px, 2.4vw, 12px)',
 }
 
 const MM_TO_PT = 2.835
@@ -43,18 +43,49 @@ function drawTicketOnDoc(
   const GRID_H   = h - LABEL_H
   const CELL_W   = w / 9
   const ROW_H    = GRID_H / 3
-  const numPt    = numMm * MM_TO_PT
+  const numPt    = numMm * MM_TO_PT - 1
   const labelPt  = LABEL_H * 0.65 * MM_TO_PT
 
   // Label strip
   doc.setFillColor(124, 58, 237)
   doc.rect(x, y, w, LABEL_H, 'F')
 
-  // Ticket number
-  doc.setTextColor(255, 255, 255)
+  // Measure ticket number width for centering
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(labelPt)
-  doc.text(`#${index + 1}`, x + w / 2, y + LABEL_H / 2, { align: 'center', baseline: 'middle' })
+  const numText    = `#${index + 1}`
+  const numW       = doc.getTextWidth(numText)
+
+  // Truncate fortune to fit, then center the pair
+  const fortuneFontPt = labelPt * 0.78 + 2
+  doc.setFontSize(fortuneFontPt)
+  doc.setFont('helvetica', 'normal')
+  const GAP          = 2.5
+  const maxFortuneW  = Math.min(w * 0.62, w - numW - GAP - 4)
+  let fortuneText    = ticket.fortune
+  while (fortuneText.length > 0 && doc.getTextWidth(fortuneText) > maxFortuneW) {
+    fortuneText = fortuneText.slice(0, -1)
+  }
+  if (fortuneText.length < ticket.fortune.length && fortuneText.length > 0) {
+    fortuneText = fortuneText.replace(/\s*\S*$/, '') + '…'
+  }
+  const fortuneW = fortuneText.length > 0 ? doc.getTextWidth(fortuneText) : 0
+  const totalW   = numW + (fortuneText.length > 0 ? GAP + fortuneW : 0)
+  const startX   = x + (w - totalW) / 2
+
+  // Ticket number
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(labelPt)
+  doc.setTextColor(255, 255, 255)
+  doc.text(numText, startX, y + LABEL_H / 2, { align: 'left', baseline: 'middle' })
+
+  // Fortune text — bold, same colour as ticket number
+  if (fortuneText.length > 0) {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(fortuneFontPt)
+    doc.setTextColor(255, 255, 255)
+    doc.text(fortuneText, startX + numW + GAP, y + LABEL_H / 2, { align: 'left', baseline: 'middle' })
+  }
 
   // Outer border
   doc.setDrawColor(76, 29, 149)
@@ -147,8 +178,16 @@ function TicketCard({ ticket, index, screenFont }: {
 }) {
   return (
     <div className="ticket-wrap border border-violet-700 rounded-sm overflow-hidden flex flex-col h-full">
-      <div className="bg-violet-600 text-white text-center flex-shrink-0" style={{ padding: '1px 0' }}>
-        <span className="font-bold" style={{ fontSize: 'clamp(6px, 1vw, 9px)' }}>#{index + 1}</span>
+      <div className="ticket-label bg-violet-600 text-white flex-shrink-0 flex items-center justify-center overflow-hidden" style={{ padding: '1px 4px', gap: '4px' }}>
+        <span className="ticket-label-num font-bold flex-shrink-0" style={{ fontSize: 'clamp(6px, 1vw, 9px)' }}>#{index + 1}</span>
+        <span className="ticket-label-fortune font-bold" style={{
+          fontSize: 'clamp(7px, 0.85vw, 9px)',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          maxWidth: '68%',
+          color: 'white',
+        }}>{ticket.fortune}</span>
       </div>
       <table className="w-full border-collapse flex-1" style={{ tableLayout: 'fixed' }}>
         <tbody>
@@ -316,7 +355,11 @@ export default function PrintTickets() {
         <div
           id="print-area"
           className="px-2 pb-8 space-y-4"
-          style={{ '--print-num-size': `${cfg.printNumMm}mm` } as React.CSSProperties}
+          style={{
+            '--print-num-size':     `${cfg.printNumMm}mm`,
+            '--print-label-num':    `${(cfg.printNumMm * 0.58).toFixed(1)}mm`,
+            '--print-fortune-size': `${(cfg.printNumMm * 0.52).toFixed(1)}mm`,
+          } as React.CSSProperties}
         >
           {pageGroups.map((group, pageIdx) => (
             <div key={pageIdx} className="print-page">

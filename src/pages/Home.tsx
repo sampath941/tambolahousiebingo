@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { useOnline } from '../hooks/useOnline'
 import { useActiveGame } from '../store/activeGameStore'
+import { useDigitalTickets } from '../store/digitalTicketStore'
 
 interface ActionCardProps {
   icon:       string
@@ -37,8 +38,9 @@ export default function Home() {
   const online     = useOnline()
   const { token, nickname, signOut } = useAuthStore()
   const signedIn   = !!token
-  const activeGame = useActiveGame()
-  const hasGame    = activeGame.type !== null && activeGame.calledArray.length >= 1 && activeGame.calledArray.length < 90
+  const activeGame    = useActiveGame()
+  const hasGame       = activeGame.type !== null && activeGame.calledArray.length >= 1 && activeGame.calledArray.length < 90
+  const ticketCount   = useDigitalTickets(s => s.tickets.length)
 
   function handleResume() {
     if (activeGame.type === 'quick') navigate('/quick-game')
@@ -124,9 +126,18 @@ export default function Home() {
         )}
 
         <ActionCard
+          icon="🎫"
+          title={ticketCount > 0 ? `Digital Ticket  ·  ${ticketCount} active` : 'Digital Ticket'}
+          subtitle={'No pen, no problem. Just like a real ticket — strike off numbers.'}
+          onClick={() => navigate('/my-tickets')}
+          border="border-2 border-violet-100"
+          arrowColor="text-violet-300"
+        />
+
+        <ActionCard
           icon="🖨️"
-          title="Print Tickets"
-          subtitle="Generate Thambola ticket sheets"
+          title="Print Ticket Sheets"
+          subtitle={'No tickets, no problem. Print ticket sheets to your printer.'}
           onClick={() => navigate('/print')}
           border="border-2 border-violet-100"
           arrowColor="text-violet-300"

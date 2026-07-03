@@ -1,5 +1,8 @@
+import { FORTUNES } from './fortunes'
+
 export interface TambolaTicket {
-  rows: (number | null)[][]  // 3 rows × 9 cols; null = empty cell
+  rows:    (number | null)[][]  // 3 rows × 9 cols; null = empty cell
+  fortune: string
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -50,7 +53,7 @@ export function generateTicket(): TambolaTicket {
     })
   }
 
-  return { rows: grid }
+  return { rows: grid, fortune: FORTUNES[Math.floor(Math.random() * FORTUNES.length)] }
 }
 
 export function generateTickets(n: number): TambolaTicket[] {
