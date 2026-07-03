@@ -58,8 +58,9 @@
   .print-page {
     break-after: page;
     page-break-after: always;
-    height: 100vh;
+    height: 287mm; /* A4 (297mm) minus 5mm top + 5mm bottom margin */
     box-sizing: border-box;
+    overflow: hidden;
   }
   .print-page:last-child {
     break-after: auto;
